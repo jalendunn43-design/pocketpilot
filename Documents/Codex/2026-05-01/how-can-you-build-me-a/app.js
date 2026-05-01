@@ -14,6 +14,7 @@ const seedEntries = [
 
 const elements = {
   form: document.querySelector("#entryForm"),
+  addEntryButton: document.querySelector("#addEntryButton"),
   amount: document.querySelector("#amount"),
   category: document.querySelector("#category"),
   note: document.querySelector("#note"),
@@ -36,6 +37,7 @@ const elements = {
   onboardingSavingsGoal: document.querySelector("#onboardingSavingsGoal"),
   spendingProblem: document.querySelector("#spendingProblem"),
   goalForm: document.querySelector("#goalForm"),
+  saveGoalButton: document.querySelector("#saveGoalButton"),
   goalAmount: document.querySelector("#goalAmount"),
   goalStatus: document.querySelector("#goalStatus"),
   goalPercent: document.querySelector("#goalPercent"),
@@ -47,6 +49,13 @@ const elements = {
   streakDots: document.querySelector("#streakDots"),
   coachAdvice: document.querySelector("#coachAdvice"),
   coachScore: document.querySelector("#coachScore"),
+  fixMoneyButton: document.querySelector("#fixMoneyButton"),
+  spendingPlanCard: document.querySelector("#spendingPlanCard"),
+  planBudget: document.querySelector("#planBudget"),
+  planDaily: document.querySelector("#planDaily"),
+  planCut: document.querySelector("#planCut"),
+  planSavings: document.querySelector("#planSavings"),
+  planSteps: document.querySelector("#planSteps"),
   activityList: document.querySelector("#activityList"),
   entryCount: document.querySelector("#entryCount"),
   navItems: document.querySelectorAll(".nav-item"),
@@ -88,6 +97,8 @@ elements.form.addEventListener("submit", async (event) => {
     return;
   }
 
+  setButtonLoading(elements.addEntryButton, true, "Adding...");
+
   const entry = {
     id: makeId(),
     type: formData.get("type"),
@@ -103,10 +114,12 @@ elements.form.addEventListener("submit", async (event) => {
   elements.form.reset();
   document.querySelector('input[name="type"][value="expense"]').checked = true;
   render();
+  await wait(450);
+  setButtonLoading(elements.addEntryButton, false);
   await syncTransactionToCloud(entry);
 });
 
-elements.goalForm.addEventListener("submit", (event) => {
+elements.goalForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const amount = Number.parseFloat(elements.goalAmount.value.replace(/,/g, ""));
@@ -115,6 +128,7 @@ elements.goalForm.addEventListener("submit", (event) => {
     return;
   }
 
+  setButtonLoading(elements.saveGoalButton, true, "Saving...");
   savingsGoal = amount;
   saveSavingsGoal();
   if (userProfile) {
@@ -122,7 +136,9 @@ elements.goalForm.addEventListener("submit", (event) => {
     saveUserProfile();
   }
   render();
-  syncProfileToCloud();
+  await wait(450);
+  setButtonLoading(elements.saveGoalButton, false);
+  await syncProfileToCloud();
 });
 
 elements.onboardingForm.addEventListener("submit", (event) => {
@@ -184,6 +200,13 @@ elements.signOutButton.addEventListener("click", async () => {
 elements.authForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   await signIn();
+});
+
+elements.fixMoneyButton.addEventListener("click", async () => {
+  setButtonLoading(elements.fixMoneyButton, true, "Building plan...");
+  await wait(1300);
+  renderSpendingPlan();
+  setButtonLoading(elements.fixMoneyButton, false);
 });
 
 elements.resetDemo.addEventListener("click", () => {
@@ -750,6 +773,38 @@ function renderProfile() {
   elements.profileNote.textContent = `PocketPilot is watching ${getProblemLabel(userProfile.spendingProblem)} first and aiming toward your ${money(userProfile.savingsGoal)} goal.`;
 }
 
+function renderSpendingPlan() {
+  const weekStart = startOfDay(daysAgo(6));
+  const weekEntries = entries.filter((entry) => new Date(entry.date) >= weekStart);
+  const totals = summarize(weekEntries);
+  const topCategory = getTopCategory(weekEntries);
+  const weeklyIncome = userProfile ? userProfile.monthlyIncome / 4.33 : totals.income;
+  const weeklySavingsTarget = weeklyIncome > 0
+    ? Math.min(Math.max(15, savingsGoal * 0.08), weeklyIncome * 0.3)
+    : Math.max(10, savingsGoal * 0.05);
+  const weeklyBudget = Math.max(0, weeklyIncome - weeklySavingsTarget);
+  const overspend = Math.max(0, totals.expense - weeklyBudget);
+  const topAmount = topCategory ? topCategory.amount : totals.expense;
+  const cutAmount = Math.max(5, Math.ceil(Math.max(overspend, topAmount * 0.25)));
+  const cutCategory = topCategory ? topCategory.category : getProblemLabel(userProfile ? userProfile.spendingProblem : "other");
+  const categoryLimit = Math.max(0, topAmount - cutAmount);
+  const savingsPlan = Math.min(cutAmount, Math.max(5, weeklySavingsTarget));
+  const budgetLabel = weeklyBudget > 0 ? money(weeklyBudget) : "Track income first";
+  const safeDaily = weeklyBudget > 0 ? Math.max(0, Math.floor((weeklyBudget - savingsPlan) / 7)) : 0;
+
+  elements.planBudget.textContent = budgetLabel;
+  elements.planDaily.textContent = weeklyBudget > 0 ? money(safeDaily) : "Add income";
+  elements.planCut.textContent = `${cutCategory}: ${money(cutAmount)}`;
+  elements.planSavings.textContent = `${money(savingsPlan)} this week`;
+  elements.planSteps.innerHTML = [
+    `Cap ${cutCategory} at ${money(categoryLimit)} and keep daily spending under ${money(safeDaily)}.`,
+    `Move exactly ${money(savingsPlan)} toward your ${money(savingsGoal)} savings goal before extra spending.`,
+    `Log every purchase the same day and skip one nonessential buy.`
+  ].map((step) => `<li>${escapeHtml(step)}</li>`).join("");
+  elements.coachAdvice.hidden = true;
+  elements.spendingPlanCard.hidden = false;
+}
+
 function setActiveView(viewName) {
   elements.appViews.forEach((view) => {
     view.classList.toggle("is-active", view.dataset.view === viewName);
@@ -766,6 +821,31 @@ function setActiveView(viewName) {
   });
 
   window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function setButtonLoading(button, isLoading, label) {
+  if (!button) return;
+
+  if (isLoading) {
+    button.dataset.defaultText = button.innerHTML;
+    button.disabled = true;
+    button.classList.add("is-loading");
+    if (label) button.setAttribute("aria-label", label);
+    return;
+  }
+
+  button.disabled = false;
+  button.classList.remove("is-loading");
+  if (button.dataset.defaultText) {
+    button.innerHTML = button.dataset.defaultText;
+  }
+  button.removeAttribute("aria-label");
+}
+
+function wait(duration) {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, duration);
+  });
 }
 
 function getCoaching(items, totals, previousTotals, netBalance, profile) {

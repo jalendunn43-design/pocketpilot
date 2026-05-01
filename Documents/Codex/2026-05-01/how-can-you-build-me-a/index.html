@@ -21,6 +21,7 @@
             <div class="brand-lockup">
               <div class="app-logo" aria-hidden="true">P</div>
               <p class="eyebrow">AI money coach</p>
+              <span class="pro-badge">Pro</span>
             </div>
             <h1>PocketPilot</h1>
             <p class="hero-subtitle">Track smarter. Spend better.</p>
@@ -111,7 +112,7 @@
                 <span>Goal amount</span>
                 <input id="goalAmount" inputmode="decimal" name="goalAmount" placeholder="500">
               </label>
-              <button class="secondary-action" type="submit">Save goal</button>
+              <button class="secondary-action" type="submit" id="saveGoalButton">Save goal</button>
             </form>
           </article>
 
@@ -143,6 +144,56 @@
         </section>
 
         <section class="main-grid app-view is-active" data-view="dashboard">
+          <section class="coach-panel" aria-label="AI coaching advice">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">AI coach</p>
+                <h2>AI Money Plan</h2>
+              </div>
+              <div class="coach-heading-actions">
+                <span class="coach-score" id="coachScore">0%</span>
+                <span class="pro-badge">PRO</span>
+              </div>
+            </div>
+            <button class="primary-action fix-money-button" type="button" id="fixMoneyButton">
+              <span class="button-pro-badge">PRO</span>
+              &#128293; Fix My Money
+            </button>
+            <div class="coach-card">
+              <p id="coachAdvice">Add a few entries and PocketPilot will spot where your money is going.</p>
+              <article class="spending-plan-card" id="spendingPlanCard" hidden>
+                <div class="plan-grid">
+                  <div>
+                    <span>Weekly budget</span>
+                    <strong id="planBudget">$0</strong>
+                  </div>
+                  <div>
+                    <span>Daily safe spend</span>
+                    <strong id="planDaily">$0</strong>
+                  </div>
+                  <div>
+                    <span>What to cut</span>
+                    <strong id="planCut">None</strong>
+                  </div>
+                  <div>
+                    <span>Savings plan</span>
+                    <strong id="planSavings">$0</strong>
+                  </div>
+                </div>
+                <div class="plan-step-heading">Action steps</div>
+                <ol class="plan-steps" id="planSteps"></ol>
+              </article>
+            </div>
+            <div class="chart-grid">
+              <div class="mini-chart" aria-label="Seven day balance chart">
+                <canvas id="balanceChart" width="640" height="220"></canvas>
+              </div>
+              <div class="mini-chart category-chart" aria-label="Category breakdown chart">
+                <canvas id="categoryChart" width="320" height="220"></canvas>
+              </div>
+            </div>
+          </section>
+
           <form class="entry-panel" id="entryForm">
             <div class="panel-heading">
               <div>
@@ -191,29 +242,8 @@
               <input id="note" name="note" placeholder="Lunch, paycheck, gas">
             </label>
 
-            <button class="primary-action" type="submit">Add entry</button>
+            <button class="primary-action" type="submit" id="addEntryButton">Add entry</button>
           </form>
-
-          <section class="coach-panel" aria-label="AI coaching advice">
-            <div class="panel-heading">
-              <div>
-                <p class="eyebrow">AI coach</p>
-                <h2>Next best move</h2>
-              </div>
-              <span class="coach-score" id="coachScore">0%</span>
-            </div>
-            <div class="coach-card">
-              <p id="coachAdvice">Add a few entries and PocketPilot will spot where your money is going.</p>
-            </div>
-            <div class="chart-grid">
-              <div class="mini-chart" aria-label="Seven day balance chart">
-                <canvas id="balanceChart" width="640" height="220"></canvas>
-              </div>
-              <div class="mini-chart category-chart" aria-label="Category breakdown chart">
-                <canvas id="categoryChart" width="320" height="220"></canvas>
-              </div>
-            </div>
-          </section>
         </section>
 
         <section class="activity-panel app-view is-active" data-view="dashboard" aria-label="Recent activity">
@@ -276,6 +306,26 @@
             </form>
             <p class="sync-note" id="syncStatus">Add your Supabase URL and anon key in supabase-config.js to enable cloud saving.</p>
           </section>
+
+          <section class="upgrade-panel" aria-label="Upgrade to Pro">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Upgrade</p>
+                <h2>PocketPilot Pro</h2>
+              </div>
+              <span class="pro-badge">$5/mo</span>
+            </div>
+            <div class="upgrade-grid">
+              <div>
+                <strong>Free</strong>
+                <span>Basic tracking, local saving, weekly summary.</span>
+              </div>
+              <div class="is-pro">
+                <strong>Pro $5/month</strong>
+                <span>AI coaching, smart alerts, savings plans.</span>
+              </div>
+            </div>
+          </section>
         </section>
       </section>
     </main>
@@ -299,10 +349,15 @@
     </nav>
     <section class="onboarding-overlay" id="onboardingOverlay" aria-label="PocketPilot onboarding" aria-modal="true" role="dialog" hidden>
       <form class="onboarding-card" id="onboardingForm">
-        <div class="onboarding-logo" aria-hidden="true">P</div>
-        <p class="eyebrow">Welcome to PocketPilot</p>
-        <h2>Set up your money coach</h2>
-        <p class="onboarding-copy">PocketPilot uses these answers to personalize your savings target and weekly advice.</p>
+        <div class="onboarding-hero">
+          <div class="onboarding-logo" aria-hidden="true">P</div>
+          <span class="pro-badge">PocketPilot</span>
+          <h2>PocketPilot</h2>
+          <p>Your AI money coach for smarter spending.</p>
+        </div>
+        <p class="eyebrow">Welcome</p>
+        <h3>Set up your money coach</h3>
+        <p class="onboarding-copy">Answer three quick questions so PocketPilot can personalize your savings target and weekly advice.</p>
 
         <label class="field">
           <span>Monthly income</span>

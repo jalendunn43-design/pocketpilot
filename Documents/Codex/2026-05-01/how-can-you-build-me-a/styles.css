@@ -116,7 +116,8 @@ button {
 }
 
 h1,
-h2 {
+h2,
+h3 {
   margin: 0;
   letter-spacing: 0;
 }
@@ -139,6 +140,32 @@ h2 {
   font-size: 1.05rem;
   line-height: 1.2;
   font-weight: 760;
+}
+
+h3 {
+  font-size: 1.35rem;
+  line-height: 1.1;
+  font-weight: 820;
+}
+
+.pro-badge,
+.button-pro-badge {
+  display: inline-grid;
+  min-height: 26px;
+  place-items: center;
+  padding: 0 10px;
+  border: 1px solid rgba(240, 180, 91, 0.32);
+  border-radius: 999px;
+  color: #160c03;
+  background: linear-gradient(135deg, var(--amber), #ffe0a8);
+  font-size: 0.72rem;
+  font-weight: 950;
+}
+
+.button-pro-badge {
+  min-height: 22px;
+  padding: 0 8px;
+  font-size: 0.68rem;
 }
 
 .today-card,
@@ -318,7 +345,7 @@ h2 {
 
 .main-grid {
   display: grid;
-  grid-template-columns: minmax(280px, 0.82fr) minmax(360px, 1.18fr);
+  grid-template-columns: minmax(360px, 1.18fr) minmax(280px, 0.82fr);
   gap: 16px;
   align-items: stretch;
 }
@@ -661,6 +688,11 @@ h2 {
 .primary-action {
   width: 100%;
   min-height: 50px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   border: 0;
   border-radius: 8px;
   background: var(--green);
@@ -668,6 +700,43 @@ h2 {
   font-weight: 900;
   box-shadow: 0 16px 32px rgba(51, 209, 122, 0.18);
   transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.secondary-action,
+.icon-button {
+  position: relative;
+}
+
+.primary-action.is-loading,
+.secondary-action.is-loading,
+.icon-button.is-loading {
+  color: transparent;
+  pointer-events: none;
+}
+
+.primary-action.is-loading > *,
+.secondary-action.is-loading > *,
+.icon-button.is-loading > * {
+  opacity: 0;
+}
+
+.primary-action.is-loading::after,
+.secondary-action.is-loading::after,
+.icon-button.is-loading::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 999px;
+  color: #06100b;
+  animation: spin 700ms linear infinite;
+}
+
+.secondary-action.is-loading::after,
+.icon-button.is-loading::after {
+  color: var(--green);
 }
 
 .primary-action:hover,
@@ -700,10 +769,17 @@ h2 {
   font-weight: 900;
 }
 
+.coach-heading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 .coach-card {
   min-height: 126px;
   display: grid;
-  align-content: center;
+  align-content: start;
   padding: 22px;
   border-radius: 8px;
   background:
@@ -718,6 +794,74 @@ h2 {
   font-size: 1.26rem;
   line-height: 1.42;
   font-weight: 680;
+}
+
+.premium-action-row {
+  margin-top: 12px;
+}
+
+.fix-money-button {
+  min-height: 62px;
+  width: 100%;
+  margin-bottom: 12px;
+  font-size: 1.05rem;
+  box-shadow: 0 18px 40px rgba(240, 180, 91, 0.18), 0 16px 32px rgba(51, 209, 122, 0.16);
+}
+
+.spending-plan-card {
+  margin-top: 14px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  animation: viewIn 280ms ease both;
+}
+
+.spending-plan-card[hidden] {
+  display: none;
+}
+
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.plan-grid div {
+  min-height: 86px;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.plan-grid span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.plan-grid strong {
+  display: block;
+  margin-top: 7px;
+  font-size: 1.05rem;
+  line-height: 1.18;
+  overflow-wrap: anywhere;
+}
+
+.plan-steps {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding-left: 22px;
+  color: var(--soft);
+  line-height: 1.38;
+}
+
+.plan-step-heading {
+  margin-top: 14px;
+  color: var(--ink);
+  font-weight: 900;
 }
 
 .chart-grid {
@@ -817,7 +961,7 @@ h2 {
 
 .onboarding-card {
   width: min(100%, 460px);
-  padding: 26px;
+  padding: 22px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background:
@@ -829,12 +973,29 @@ h2 {
 .onboarding-logo {
   width: 54px;
   height: 54px;
-  margin-bottom: 18px;
+}
+
+.onboarding-hero {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid rgba(51, 209, 122, 0.16);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(51, 209, 122, 0.16), rgba(240, 180, 91, 0.08)),
+    rgba(255, 255, 255, 0.035);
 }
 
 .onboarding-card h2 {
-  font-size: 2rem;
+  font-size: 2.35rem;
   line-height: 1;
+}
+
+.onboarding-hero p {
+  margin: 0;
+  color: var(--soft);
+  line-height: 1.42;
 }
 
 .onboarding-copy {
@@ -852,6 +1013,24 @@ h2 {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes viewIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
@@ -928,6 +1107,10 @@ h2 {
   display: none !important;
 }
 
+.app-view.is-active {
+  animation: viewIn 240ms ease both;
+}
+
 .profile-panel {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -942,6 +1125,47 @@ h2 {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.035);
+}
+
+.upgrade-panel {
+  margin-top: 12px;
+  padding: 16px;
+  border: 1px solid rgba(240, 180, 91, 0.22);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(240, 180, 91, 0.12), rgba(122, 167, 255, 0.06)),
+    rgba(255, 255, 255, 0.035);
+}
+
+.upgrade-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.upgrade-grid div {
+  min-height: 108px;
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.upgrade-grid .is-pro {
+  border-color: rgba(240, 180, 91, 0.28);
+  background: rgba(240, 180, 91, 0.1);
+}
+
+.upgrade-grid strong,
+.upgrade-grid span {
+  display: block;
+}
+
+.upgrade-grid span {
+  margin-top: 8px;
+  color: var(--muted);
+  line-height: 1.36;
+  font-size: 0.88rem;
 }
 
 .auth-form {
@@ -1162,6 +1386,8 @@ h2 {
   .insight-grid,
   .main-grid,
   .chart-grid,
+  .plan-grid,
+  .upgrade-grid,
   .report-stats,
   .achievement-list {
     grid-template-columns: 1fr;
@@ -1171,6 +1397,11 @@ h2 {
   .metric {
     min-height: 92px;
     padding: 15px;
+  }
+
+  .fix-money-button {
+    min-width: 0;
+    width: 100%;
   }
 
   .metric-icon {
@@ -1208,6 +1439,19 @@ h2 {
 
   .mini-chart {
     height: 190px;
+  }
+
+  .onboarding-card {
+    width: min(100%, 390px);
+    padding: 16px;
+  }
+
+  .onboarding-hero {
+    padding: 16px;
+  }
+
+  .onboarding-card h2 {
+    font-size: 2rem;
   }
 
   .activity-row {
