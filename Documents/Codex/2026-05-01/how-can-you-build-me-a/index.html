@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#080a09">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PocketPilot">
+    <title>PocketPilot - AI Money Coach</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="icon.svg">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace" aria-label="PocketPilot money coach">
+        <header class="topbar app-view is-active" data-view="dashboard">
+          <div class="brand-hero">
+            <div class="brand-lockup">
+              <div class="app-logo" aria-hidden="true">P</div>
+              <p class="eyebrow">AI money coach</p>
+            </div>
+            <h1>PocketPilot</h1>
+            <p class="hero-subtitle">Track smarter. Spend better.</p>
+          </div>
+          <div class="today-card">
+            <div class="wallet-mark" aria-hidden="true">P</div>
+            <div>
+              <span id="todayLabel">Today</span>
+              <strong id="todayBalance">$0</strong>
+            </div>
+            <button class="profile-button" type="button" id="editProfile" aria-label="Edit profile" title="Edit profile">Profile</button>
+          </div>
+        </header>
+
+        <section class="reminder-banner app-view is-active" data-view="dashboard" id="dailyReminder" aria-label="Daily reminder" hidden>
+          <div class="reminder-icon" aria-hidden="true">!</div>
+          <div>
+            <strong>Don't break your streak &#128293;</strong>
+            <span>Log today to keep PocketPilot accurate.</span>
+          </div>
+        </section>
+
+        <section class="summary-grid app-view is-active" data-view="dashboard" aria-label="Balance summary">
+          <article class="metric">
+            <div class="metric-icon income-icon" aria-hidden="true">+</div>
+            <div>
+              <span>Weekly income</span>
+              <strong id="weekIncome">$0</strong>
+            </div>
+          </article>
+          <article class="metric">
+            <div class="metric-icon expense-icon" aria-hidden="true">-</div>
+            <div>
+              <span>Weekly spending</span>
+              <strong id="weekSpending">$0</strong>
+            </div>
+          </article>
+          <article class="metric">
+            <div class="metric-icon balance-icon" aria-hidden="true">=</div>
+            <div>
+              <span>Weekly balance</span>
+              <strong id="weekBalance">$0</strong>
+            </div>
+          </article>
+        </section>
+
+        <section class="report-grid app-view" data-view="reports" aria-label="Weekly report">
+          <article class="weekly-report">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Weekly report</p>
+                <h2>Spending snapshot</h2>
+              </div>
+              <span class="report-pill" id="reportTrend">Tracking</span>
+            </div>
+            <div class="report-stats">
+              <div>
+                <span>Total spent</span>
+                <strong id="reportSpent">$0</strong>
+              </div>
+              <div>
+                <span>Top category</span>
+                <strong id="reportTopCategory">None</strong>
+              </div>
+            </div>
+            <p class="report-summary" id="reportSummary">Log a few entries to build your weekly report.</p>
+          </article>
+        </section>
+
+        <section class="insight-grid app-view" data-view="goals" aria-label="Goal and streak">
+          <article class="goal-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Savings goal</p>
+                <h2 id="goalStatus">Set a goal</h2>
+              </div>
+              <strong id="goalPercent">0%</strong>
+            </div>
+            <div class="progress-track" aria-label="Savings goal progress">
+              <span id="goalProgress"></span>
+            </div>
+            <div class="goal-meta">
+              <span id="goalSaved">$0 saved</span>
+              <span id="goalRemaining">$0 to go</span>
+            </div>
+            <form class="goal-form" id="goalForm">
+              <label class="field">
+                <span>Goal amount</span>
+                <input id="goalAmount" inputmode="decimal" name="goalAmount" placeholder="500">
+              </label>
+              <button class="secondary-action" type="submit">Save goal</button>
+            </form>
+          </article>
+
+          <article class="streak-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Daily streak</p>
+                <h2>Consistency score</h2>
+              </div>
+              <div class="streak-badge" aria-hidden="true">S</div>
+            </div>
+            <div class="streak-number">
+              <strong id="streakNumber">0</strong>
+              <span>days</span>
+            </div>
+            <p id="streakMessage">Log money today to start your streak.</p>
+            <div class="streak-row" id="streakDots" aria-label="Recent logging days"></div>
+          </article>
+        </section>
+
+        <section class="achievements-panel app-view" data-view="goals" aria-label="Achievements">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Achievements</p>
+              <h2>Money milestones</h2>
+            </div>
+          </div>
+          <div class="achievement-list" id="achievementList"></div>
+        </section>
+
+        <section class="main-grid app-view is-active" data-view="dashboard">
+          <form class="entry-panel" id="entryForm">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Add transaction</p>
+                <h2>Track money in seconds</h2>
+              </div>
+              <button class="icon-button" type="button" id="resetDemo" aria-label="Reset demo data" title="Reset demo data">
+                Reset
+              </button>
+            </div>
+
+            <div class="type-toggle" role="radiogroup" aria-label="Transaction type">
+              <label>
+                <input type="radio" name="type" value="expense" checked>
+                <span><b class="toggle-icon expense-icon" aria-hidden="true">-</b>Spent</span>
+              </label>
+              <label>
+                <input type="radio" name="type" value="income">
+                <span><b class="toggle-icon income-icon" aria-hidden="true">+</b>Earned</span>
+              </label>
+            </div>
+
+            <label class="field">
+              <span>Amount</span>
+              <input id="amount" inputmode="decimal" name="amount" placeholder="42.00" required>
+            </label>
+
+            <label class="field">
+              <span>Category</span>
+              <select id="category" name="category">
+                <option>Food</option>
+                <option>Transport</option>
+                <option>Gas</option>
+                <option>Bills</option>
+                <option>Shopping</option>
+                <option>Subscriptions</option>
+                <option>Entertainment</option>
+                <option>Savings</option>
+                <option>Work</option>
+                <option>Other</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Note</span>
+              <input id="note" name="note" placeholder="Lunch, paycheck, gas">
+            </label>
+
+            <button class="primary-action" type="submit">Add entry</button>
+          </form>
+
+          <section class="coach-panel" aria-label="AI coaching advice">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">AI coach</p>
+                <h2>Next best move</h2>
+              </div>
+              <span class="coach-score" id="coachScore">0%</span>
+            </div>
+            <div class="coach-card">
+              <p id="coachAdvice">Add a few entries and PocketPilot will spot where your money is going.</p>
+            </div>
+            <div class="chart-grid">
+              <div class="mini-chart" aria-label="Seven day balance chart">
+                <canvas id="balanceChart" width="640" height="220"></canvas>
+              </div>
+              <div class="mini-chart category-chart" aria-label="Category breakdown chart">
+                <canvas id="categoryChart" width="320" height="220"></canvas>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section class="activity-panel app-view is-active" data-view="dashboard" aria-label="Recent activity">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Recent activity</p>
+              <h2>Last entries</h2>
+            </div>
+            <span id="entryCount">0 entries</span>
+          </div>
+          <div class="activity-list" id="activityList"></div>
+        </section>
+
+        <section class="profile-panel app-view" data-view="profile" aria-label="Profile">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Profile</p>
+              <h2>Your money setup</h2>
+            </div>
+            <button class="secondary-action compact-action" type="button" id="editProfilePanel">Edit</button>
+          </div>
+          <div class="profile-grid">
+            <div>
+              <span>Monthly income</span>
+              <strong id="profileIncome">$0</strong>
+            </div>
+            <div>
+              <span>Savings goal</span>
+              <strong id="profileGoal">$0</strong>
+            </div>
+            <div>
+              <span>Spending focus</span>
+              <strong id="profileProblem">Not set</strong>
+            </div>
+          </div>
+          <p class="profile-note" id="profileNote">Complete onboarding so PocketPilot can personalize your coach.</p>
+
+          <section class="auth-panel" aria-label="Account and cloud sync">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Cloud sync</p>
+                <h2>Supabase account</h2>
+              </div>
+              <span class="auth-pill" id="authStatus">Local mode</span>
+            </div>
+            <form class="auth-form" id="authForm">
+              <label class="field">
+                <span>Email</span>
+                <input id="authEmail" name="email" type="email" autocomplete="email" placeholder="you@example.com">
+              </label>
+              <label class="field">
+                <span>Password</span>
+                <input id="authPassword" name="password" type="password" autocomplete="current-password" placeholder="8+ characters">
+              </label>
+              <div class="auth-actions">
+                <button class="primary-action" type="button" id="signInButton">Log in</button>
+                <button class="secondary-action" type="button" id="signUpButton">Sign up</button>
+                <button class="icon-button" type="button" id="signOutButton" hidden>Log out</button>
+              </div>
+            </form>
+            <p class="sync-note" id="syncStatus">Add your Supabase URL and anon key in supabase-config.js to enable cloud saving.</p>
+          </section>
+        </section>
+      </section>
+    </main>
+    <nav class="bottom-nav" aria-label="Primary navigation">
+      <button class="nav-item is-active" type="button" data-target-view="dashboard" aria-current="page">
+        <span aria-hidden="true">D</span>
+        Dashboard
+      </button>
+      <button class="nav-item" type="button" data-target-view="reports">
+        <span aria-hidden="true">R</span>
+        Reports
+      </button>
+      <button class="nav-item" type="button" data-target-view="goals">
+        <span aria-hidden="true">G</span>
+        Goals
+      </button>
+      <button class="nav-item" type="button" data-target-view="profile">
+        <span aria-hidden="true">P</span>
+        Profile
+      </button>
+    </nav>
+    <section class="onboarding-overlay" id="onboardingOverlay" aria-label="PocketPilot onboarding" aria-modal="true" role="dialog" hidden>
+      <form class="onboarding-card" id="onboardingForm">
+        <div class="onboarding-logo" aria-hidden="true">P</div>
+        <p class="eyebrow">Welcome to PocketPilot</p>
+        <h2>Set up your money coach</h2>
+        <p class="onboarding-copy">PocketPilot uses these answers to personalize your savings target and weekly advice.</p>
+
+        <label class="field">
+          <span>Monthly income</span>
+          <input id="monthlyIncome" name="monthlyIncome" inputmode="decimal" placeholder="3200" required>
+        </label>
+
+        <label class="field">
+          <span>Savings goal</span>
+          <input id="onboardingSavingsGoal" name="savingsGoal" inputmode="decimal" placeholder="500" required>
+        </label>
+
+        <label class="field">
+          <span>Top spending problem</span>
+          <select id="spendingProblem" name="spendingProblem" required>
+            <option value="food">Food</option>
+            <option value="subscriptions">Subscriptions</option>
+            <option value="shopping">Shopping</option>
+            <option value="gas">Gas</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+
+        <button class="primary-action" type="submit">Start coaching</button>
+      </form>
+    </section>
+    <script src="supabase-config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
